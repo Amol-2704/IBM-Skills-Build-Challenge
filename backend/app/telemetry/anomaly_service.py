@@ -1,0 +1,58 @@
+from pydantic_core.core_schema import none_schema
+from app.models.telemetry import TelemetryRecord
+from app.repositories.telemetry_repo import Telemetry_repo
+
+class AnomalyService:
+    def __init__(
+        self, 
+        telemetry_repo: Telemetry_repo | None = None
+    ):
+
+        self.repository = telemetry_repo or Telemetry_repo() 
+
+    def get_anomaly(
+        self,
+        anomaly_id: str
+    ) -> TelemetryRecord:
+
+        telemetry = self.repository.get_bu_anomaly_id(
+            anomaly_id
+        )
+
+        if telemetry is None:
+            raise ValueError(
+                f"Anomaly ;'{anomaly_id}' not found."
+
+            )
+
+        return telemetry
+    def calculate_severity(
+        self,
+        telemetry: TelemetryRecord
+    ) -> str: 
+
+        if (
+            telemetry.battery_temperature >= 35
+            or telemetry.battery_voltage <= 27
+        ): 
+
+            return "CRITICAL"
+
+        if (
+            telemetry.battery_temperature >= 29
+            or telemetry.current_draw >= 4.5
+        ):
+
+            return "HIGH"
+
+        if (
+            telemetry.battery_temperature >= 27
+            or telemetry.current_draw >= 4.0
+        ): 
+            return "MEDIUM"
+
+        return "LOW"
+
+anomaly_service = AnomalyService()
+
+

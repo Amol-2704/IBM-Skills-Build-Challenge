@@ -1,0 +1,13 @@
+{
+    "anomalyID": "ANOM-001",
+    "subsystem": "Power",
+    "severity": "HIGH",
+    "mission_phase": "Orbital Operations",
+    "telemetry": {
+        "battery_temperature": 29.7,
+        "current_draw": 4.8
+    },
+    "historical_incidents": [],
+    "procedures": [],
+    "recent_events": []
+}

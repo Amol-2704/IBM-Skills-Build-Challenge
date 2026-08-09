@@ -1,0 +1,20 @@
+[
+  {
+    "id": "HIST-001",
+    "title": "Spirit Rover Flash Memory Anomaly",
+    "subsystem": "Software",
+    "description": "Accumulation of files in flash memory contributed to repeated rover reboots."
+  },
+  {
+    "id": "HIST-002",
+    "title": "Hakuto-R Landing Failure",
+    "subsystem": "Navigation",
+    "description": "Incorrect altitude information contributed to a failed lunar landing attempt."
+  },
+  {
+    "id": "HIST-003",
+    "title": "Iridium-Cosmos Collision",
+    "subsystem": "Operations",
+    "description": "A conjunction risk was not sufficiently acted upon amid a large volume of collision alerts."
+  }
+]

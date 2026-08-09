@@ -1,0 +1,29 @@
+[
+  {
+    "anomaly_id": "ANOM-001",
+    "timestamp": "2026-08-09T14:21:00Z",
+    "subsystem": "Power",
+    "mission_phase": "Orbital Operations",
+    "battery_temperature": 29.7,
+    "current_draw": 4.8,
+    "battery_voltage": 28.4
+  },
+  {
+    "anomaly_id": "ANOM-002",
+    "timestamp": "2026-08-09T14:18:00Z",
+    "subsystem": "Thermal",
+    "mission_phase": "Orbital Operations",
+    "battery_temperature": 34.2,
+    "current_draw": 3.9,
+    "battery_voltage": 28.7
+  },
+  {
+    "anomaly_id": "ANOM-003",
+    "timestamp": "2026-08-09T14:10:00Z",
+    "subsystem": "Communications",
+    "mission_phase": "Orbital Operations",
+    "battery_temperature": 27.8,
+    "current_draw": 4.1,
+    "battery_voltage": 28.6
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "PROC-POWER-001",
+    "title": "Investigate Elevated Power Draw",
+    "subsystem": "Power",
+    "steps": [
+      "Verify current draw against expected operational limits.",
+      "Check battery temperature trend.",
+      "Verify battery voltage stability.",
+      "Inspect recent subsystem activation events.",
+      "Compare telemetry against historical power anomalies."
+    ]
+  }
+]

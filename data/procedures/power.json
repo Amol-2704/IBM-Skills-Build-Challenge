@@ -1,0 +1,12 @@
+{
+  "id": "PROC-POWER-001",
+  "title": "Battery Thermal Response",
+  "subsystem": "Power",
+  "steps": [
+    "Verify battery temperature telemetry.",
+    "Check spacecraft current draw.",
+    "Inspect thermal control telemetry.",
+    "Identify recent changes in power-consuming subsystems.",
+    "Consider reduced-power operation if temperature continues rising."
+  ]
+}
