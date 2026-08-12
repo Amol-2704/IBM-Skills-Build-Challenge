@@ -1,14 +1,10 @@
 [
   {
-    "id": "HIST-001",
-    "title": "Spirit Rover Flash Memory Anomaly",
-    "subsystem": "Software",
-    "description": "Accumulating files in flash memory eventually contributed to repeated rover resets."
-  },
-  {
-    "id": "HIST-002",
-    "title": "Power System Thermal Excursion",
-    "subsystem": "Power",
-    "description": "A spacecraft power subsystem experienced elevated thermal conditions during sustained high current draw."
+    "id": "INC-001",
+    "title": "Battery temperature spike",
+    "description": "Battery temperature exceeded normal operating range.",
+    "subsystem": "battery",
+    "severity": "HIGH",
+    "resolution": "Reduced load and restored thermal stability."
   }
 ]

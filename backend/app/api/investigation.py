@@ -1,32 +1,19 @@
-from app.context.context_service import context_service
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
+from app.schemas.investigation import (InvestigationRequest, InvestigationResult)
+from app.services.investigation_service import investigation_service
 
-from app.schemas.investigation import (
-    InvestigationContext,
-    InvestigationRequest,
-)
 
 
 router = APIRouter(
-    prefix="/api",
-    tags=["Investigation"],
+    prefix="/investigate",
+    tags=["Investigation"]
 )
 
 
-@router.post(
-    "/investigate",
-    response_model=InvestigationContext,
-)
-def investigate(
-    request: InvestigationRequest,
-):
-    try:
-        return context_service.build_context(
-            request.anomaly_id
-        )
+@router.post("", response_model=InvestigationResult)
+def investigate(request: InvestigationRequest):
 
-    except Exception as error:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Investigation failed: {error}",
-        )
+    return investigation_service.investigate(
+        query=request.query,
+        time_range=request.time_range
+    )

@@ -1,4 +1,3 @@
-from pydantic_core.core_schema import none_schema
 from app.models.telemetry import TelemetryRecord
 from app.repositories.telemetry_repo import Telemetry_repo
 
@@ -15,7 +14,7 @@ class AnomalyService:
         anomaly_id: str
     ) -> TelemetryRecord:
 
-        telemetry = self.repository.get_bu_anomaly_id(
+        telemetry = self.repository.get_by_anomaly_id(
             anomaly_id
         )
 
@@ -52,6 +51,15 @@ class AnomalyService:
             return "MEDIUM"
 
         return "LOW"
+
+    def detect(self, context) -> list[dict]:
+        anomalies = []
+        if context.severity in ["CRITICAL", "HIGH"]:
+            anomalies.append({
+                "type": "threshold_violation",
+                "description": f"High severity anomaly in {context.subsystem}"
+            })
+        return anomalies
 
 anomaly_service = AnomalyService()
 

@@ -1,14 +1,13 @@
 [
   {
-    "id": "PROC-POWER-001",
-    "title": "Investigate Elevated Power Draw",
-    "subsystem": "Power",
+    "id": "PROC-001",
+    "title": "Battery thermal investigation",
+    "description": "Procedure for investigating abnormal battery temperature.",
+    "subsystem": "battery",
     "steps": [
-      "Verify current draw against expected operational limits.",
-      "Check battery temperature trend.",
-      "Verify battery voltage stability.",
-      "Inspect recent subsystem activation events.",
-      "Compare telemetry against historical power anomalies."
+      "Check battery temperature",
+      "Check current draw",
+      "Compare against baseline"
     ]
   }
 ]

@@ -7,19 +7,18 @@ from pydantic import BaseModel, Field
 class HistoricalIncident(BaseModel):
     id: str
     title: str
-    subsystem: str
     description: str
+    subsystem: str
+    severity: str
+    resolution: str | None = None
 
 
 class Procedure(BaseModel):
     id: str
     title: str
+    description: str
     subsystem: str
-    steps: list[str]
-
-
-class InvestigationRequest(BaseModel):
-    anomaly_id: str = Field(..., min_length=1)
+    steps: list[str] = Field(default_factory=list)
 
 
 class InvestigationContext(BaseModel):
@@ -29,10 +28,31 @@ class InvestigationContext(BaseModel):
     mission_phase: str
 
     telemetry: dict[str, Any]
-    recent_events: list[dict[str, Any]]
+    recent_events: list[dict[str, Any]] = Field(
+        default_factory=list
+    )
 
-    historical_incidents: list[HistoricalIncident]
-    procedures: list[Procedure]
+    historical_incidents: list[HistoricalIncident] = Field(
+        default_factory=list
+    )
+
+    procedures: list[Procedure] = Field(
+        default_factory=list
+    )
 
     generated_at: datetime
-    
+
+
+class InvestigationRequest(BaseModel):
+    query: str
+    time_range: str = "24h"
+
+
+class InvestigationResult(BaseModel):
+    investigation_id: str
+    query: str
+    summary: list[str]
+    anomalies: list[Any]
+    evidence: list[Any]
+    confidence: float
+    next_steps: list[str]

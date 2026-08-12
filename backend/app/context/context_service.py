@@ -8,11 +8,7 @@ from app.schemas.investigation import (
     InvestigationContext,
     Procedure,
 )
-
-from app.telemetry.anomaly_service import anomaly_service
-
-from app.core.config import BASE_DIR, DATA_DIR
-
+from app.core.config import DATA_DIR
 
 class ContextService:
 
@@ -24,13 +20,17 @@ class ContextService:
         with path.open("r", encoding="utf-8") as file:
             return json.load(file)
 
-    def _load_historical_incidents(
-        self,
-    ) -> list[HistoricalIncident]:
+    def _load_historical_incidents(self) -> list[HistoricalIncident]:
 
         path = DATA_DIR / "incidents.json"
 
         data = self._load_json(path)
+
+        if not data:
+            return []
+
+        if isinstance(data, dict):
+            data = [data]
 
         return [
             HistoricalIncident(**incident)
@@ -63,17 +63,10 @@ class ContextService:
 
     def build_context(
         self,
-        anomaly_id: str
+        anomaly_id: str,
+        telemetry,
+        severity: str,
     ) -> InvestigationContext:
-
-        # Get real telemetry through the anomaly service
-        telemetry = anomaly_service.get_anomaly(
-            anomaly_id
-        )
-
-        severity = anomaly_service.calculate_severity(
-            telemetry
-        )
 
         historical_incidents = (
             self._load_historical_incidents()
@@ -96,12 +89,17 @@ class ContextService:
 
         recent_events = [
             {
-                "timestamp": telemetry.timestamp.isoformat(),
-                "type": "TELEMETRY",
-                "message": (
-                    f"{telemetry.subsystem} telemetry "
-                    f"triggered anomaly {anomaly_id}."
-                ),
+                "timestamp":
+                    telemetry.timestamp.isoformat(),
+
+                "type":
+                    "TELEMETRY",
+
+                "message":
+                    (
+                        f"{telemetry.subsystem} telemetry "
+                        f"triggered anomaly {anomaly_id}."
+                    ),
             }
         ]
 
@@ -114,9 +112,7 @@ class ContextService:
             recent_events=recent_events,
             historical_incidents=historical_incidents,
             procedures=procedures,
-            generated_at=datetime.now(
-                timezone.utc
-            ),
+            generated_at=datetime.now(timezone.utc),
         )
 
 
