@@ -3,6 +3,7 @@ export type Evidence = Record<string, unknown>;
 export interface InvestigationResult {
   investigation_id: string;
   query: string;
+  severity: string;
   summary: string[];
   anomalies: unknown[];
   evidence: Evidence[];

@@ -11,6 +11,17 @@ from app.schemas.investigation import (
 from app.core.config import DATA_DIR
 
 class ContextService:
+    _SUBSYSTEM_ALIASES = {
+        "power": {"power", "battery"},
+        "battery": {"power", "battery"},
+    }
+
+    def subsystem_matches(self, candidate: str, subsystem: str) -> bool:
+        """Match operational terminology used across the small local knowledge base."""
+        candidate_key = candidate.strip().lower()
+        subsystem_key = subsystem.strip().lower()
+        aliases = self._SUBSYSTEM_ALIASES.get(subsystem_key, {subsystem_key})
+        return candidate_key in aliases
 
     def _load_json(self, path: Path) -> Any:
 
@@ -72,9 +83,12 @@ class ContextService:
             self._load_historical_incidents()
         )
 
-        procedures = self._load_procedures(
-            telemetry.subsystem
-        )
+        procedures = []
+        # Procedures may be indexed under an operational alias (Power/Battery).
+        for procedure_subsystem in self._SUBSYSTEM_ALIASES.get(
+            telemetry.subsystem.lower(), {telemetry.subsystem.lower()}
+        ):
+            procedures.extend(self._load_procedures(procedure_subsystem))
 
         telemetry_data = {
             "battery_temperature":

@@ -38,6 +38,7 @@ class InvestigationService:
         return {
             "investigation_id": investigation_id,
             "query": query,
+            "severity": severity,
             "summary": self._build_summary(
                 context,
                 anomalies
@@ -74,8 +75,7 @@ class InvestigationService:
         matching_incidents = [
             incident
             for incident in context.historical_incidents
-            if incident.subsystem.lower()
-            == context.subsystem.lower()
+            if context_service.subsystem_matches(incident.subsystem, context.subsystem)
         ]
 
         if matching_incidents:
@@ -93,20 +93,30 @@ class InvestigationService:
 
     def _build_evidence(self, context):
 
-        evidence = []
+        telemetry_timestamp = context.recent_events[0]["timestamp"]
+        evidence = [{
+            "type": "telemetry_snapshot",
+            "title": f"Current {context.subsystem} telemetry",
+            "description": f"Captured during {context.mission_phase} at {telemetry_timestamp}.",
+            "data": context.telemetry,
+        }]
 
-        # Current telemetry
-        evidence.append({
-            "type": "telemetry",
-            "data": context.telemetry
-        })
+        for signal in anomaly_service.detect(context):
+            evidence.append({
+                "type": "telemetry_signal",
+                "title": signal["metric"].replace("_", " ").title(),
+                "description": signal["description"],
+                "metric": signal["metric"],
+                "observed": signal["observed"],
+                "threshold": signal["threshold"],
+                "severity": signal["severity"],
+            })
 
         # Matching historical incidents
         matching_incidents = [
             incident
             for incident in context.historical_incidents
-            if incident.subsystem.lower()
-            == context.subsystem.lower()
+            if context_service.subsystem_matches(incident.subsystem, context.subsystem)
         ]
 
         for incident in matching_incidents:
@@ -123,8 +133,7 @@ class InvestigationService:
         matching_procedures = [
             procedure
             for procedure in context.procedures
-            if procedure.subsystem.lower()
-            == context.subsystem.lower()
+            if context_service.subsystem_matches(procedure.subsystem, context.subsystem)
         ]
 
         for procedure in matching_procedures:
@@ -143,18 +152,24 @@ class InvestigationService:
         anomalies
     ):
 
-        confidence = 0.5
+        matching_incidents = [
+            incident for incident in context.historical_incidents
+            if context_service.subsystem_matches(incident.subsystem, context.subsystem)
+        ]
+        matching_procedures = [
+            procedure for procedure in context.procedures
+            if context_service.subsystem_matches(procedure.subsystem, context.subsystem)
+        ]
 
-        if anomalies:
-            confidence += 0.2
-
-        if context.historical_incidents:
-            confidence += 0.15
-
-        if context.procedures:
-            confidence += 0.15
-
-        return min(confidence, 1.0)
+        # Evidence-weighted, deterministic confidence.  The terms deliberately
+        # map to independently verifiable sources rather than a fixed answer.
+        score = 0.30  # A complete telemetry record is always the starting point.
+        score += min(len(anomalies), 3) * 0.12
+        score += min(len(matching_incidents), 2) * 0.17
+        score += min(len(matching_procedures), 2) * 0.10
+        if context.severity in {"HIGH", "CRITICAL"}:
+            score += 0.05
+        return round(min(score, 0.99), 2)
 
     def _build_next_steps(
         self,
@@ -173,8 +188,7 @@ class InvestigationService:
         matching_procedures = [
             procedure
             for procedure in context.procedures
-            if procedure.subsystem.lower()
-            == context.subsystem.lower()
+            if context_service.subsystem_matches(procedure.subsystem, context.subsystem)
         ]
 
         # Use actual procedure steps
@@ -185,8 +199,7 @@ class InvestigationService:
         matching_incidents = [
             incident
             for incident in context.historical_incidents
-            if incident.subsystem.lower()
-            == context.subsystem.lower()
+            if context_service.subsystem_matches(incident.subsystem, context.subsystem)
         ]
 
         for incident in matching_incidents:

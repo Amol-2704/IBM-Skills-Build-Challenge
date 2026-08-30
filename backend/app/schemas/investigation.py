@@ -51,6 +51,7 @@ class InvestigationRequest(BaseModel):
 class InvestigationResult(BaseModel):
     investigation_id: str
     query: str
+    severity: str
     summary: list[str]
     anomalies: list[Any]
     evidence: list[Any]
